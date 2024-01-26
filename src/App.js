@@ -33,16 +33,23 @@ function Button({ children, onClick }) {
 export default function App() {
   const [isOpen, setIsOpen] = useState(false);
 
+  const [newFriend, setNewFriend] = useState(initialFriends);
+
   function handleToggle() {
     setIsOpen((open) => !open);
+  }
+
+  function HandleAddFriend(fr) {
+    setNewFriend((friends) => [...friends, fr]);
+    setIsOpen(false);
   }
 
   return (
     <div className="app">
       <div className="sidebar">
-        <List data={initialFriends} />
+        <List friend={newFriend} />
 
-        {isOpen && <FormAddFriend />}
+        {isOpen && <FormAddFriend onAddFriend={HandleAddFriend} />}
 
         <Button value={isOpen} onClick={handleToggle}>
           {isOpen ? "CLose" : "Add friend"}
@@ -54,10 +61,10 @@ export default function App() {
   );
 }
 
-function List({ data }) {
+function List({ friend }) {
   return (
     <ul>
-      {data.map((friend) => (
+      {friend.map((friend) => (
         <Friend key={friend.id} friend={friend} />
       ))}
     </ul>
@@ -88,14 +95,34 @@ function Friend({ friend }) {
   );
 }
 
-function FormAddFriend() {
+function FormAddFriend({ onAddFriend }) {
+  const [name, setName] = useState("");
+  const [image, setImage] = useState("");
+
+  function handleNewFriend(e) {
+    e.preventDefault();
+    const newFriend = { name, image, balance: 0 };
+
+    onAddFriend(newFriend);
+
+    setName("");
+    setImage("");
+  }
   return (
-    <form className="form-add-friend">
+    <form className="form-add-friend" onSubmit={handleNewFriend}>
       <label>Friend name</label>
-      <input type="text" />
+      <input
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
 
       <label>Image url</label>
-      <input type="text" />
+      <input
+        type="text"
+        value={image}
+        onChange={(e) => setImage(e.target.value)}
+      />
       <Button>Add</Button>
     </form>
   );
