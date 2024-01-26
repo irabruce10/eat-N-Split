@@ -1,4 +1,5 @@
 import "./index.css";
+import { useState } from "react";
 
 const initialFriends = [
   {
@@ -21,14 +22,31 @@ const initialFriends = [
   },
 ];
 
+function Button({ children, onClick }) {
+  return (
+    <button className="button" onClick={onClick}>
+      {children}
+    </button>
+  );
+}
+
 export default function App() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  function handleToggle() {
+    setIsOpen((open) => !open);
+  }
+
   return (
     <div className="app">
       <div className="sidebar">
         <List data={initialFriends} />
-        <FormAddFriend />
 
-        <Button>Add form</Button>
+        {isOpen && <FormAddFriend />}
+
+        <Button value={isOpen} onClick={handleToggle}>
+          {isOpen ? "CLose" : "Add friend"}
+        </Button>
       </div>
 
       <FormSlpitBill />
@@ -70,10 +88,6 @@ function Friend({ friend }) {
   );
 }
 
-function Button({ children }) {
-  return <button className="button">{children}</button>;
-}
-
 function FormAddFriend() {
   return (
     <form className="form-add-friend">
@@ -83,7 +97,6 @@ function FormAddFriend() {
       <label>Image url</label>
       <input type="text" />
       <Button>Add</Button>
-      {""}
     </form>
   );
 }
