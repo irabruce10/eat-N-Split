@@ -34,20 +34,25 @@ export default function App() {
   const [isOpen, setIsOpen] = useState(false);
 
   const [newFriend, setNewFriend] = useState(initialFriends);
+  const [selectFriend, setSelectFriend] = useState(null);
 
   function handleToggle() {
     setIsOpen((open) => !open);
   }
 
-  function HandleAddFriend(fr) {
-    setNewFriend((friends) => [...friends, fr]);
+  function HandleAddFriend(friend) {
+    setNewFriend((friends) => [...friends, friend]);
     setIsOpen(false);
+  }
+
+  function handleSelectFriend(friend) {
+    setSelectFriend(friend);
   }
 
   return (
     <div className="app">
       <div className="sidebar">
-        <List friend={newFriend} />
+        <List friend={newFriend} onSelectFriend={handleSelectFriend} />
 
         {isOpen && <FormAddFriend onAddFriend={HandleAddFriend} />}
 
@@ -56,21 +61,25 @@ export default function App() {
         </Button>
       </div>
 
-      <FormSlpitBill />
+      {selectFriend && <FormSlpitBill selectFriend={selectFriend} />}
     </div>
   );
 }
 
-function List({ friend }) {
+function List({ friend, onSelectFriend }) {
   return (
     <ul>
       {friend.map((friend) => (
-        <Friend key={friend.id} friend={friend} />
+        <Friend
+          key={friend.id}
+          friend={friend}
+          onSelectFriend={onSelectFriend}
+        />
       ))}
     </ul>
   );
 }
-function Friend({ friend }) {
+function Friend({ friend, onSelectFriend }) {
   return (
     <li>
       <img src={friend.image} alt={friend.image} />
@@ -90,7 +99,7 @@ function Friend({ friend }) {
 
       {friend.balance === 0 && <p>You and {friend.name} are even</p>}
 
-      <Button>Select</Button>
+      <Button onClick={() => onSelectFriend(friend)}>Select</Button>
     </li>
   );
 }
@@ -131,10 +140,10 @@ function FormAddFriend({ onAddFriend }) {
   );
 }
 
-function FormSlpitBill() {
+function FormSlpitBill({ selectFriend }) {
   return (
     <form className="form-split-bill">
-      <h2>Split with bill</h2>
+      <h2>Split bill with {selectFriend.name}</h2>
 
       <label>Bill value</label>
       <input type="text" />
@@ -142,7 +151,7 @@ function FormSlpitBill() {
       <label>Your expense</label>
       <input type="text" />
 
-      <label>x's expense</label>
+      <label>{selectFriend.name}'s expense</label>
       <input type="text" disabled />
 
       <label>who pay thebill</label>
